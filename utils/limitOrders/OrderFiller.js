@@ -19,7 +19,7 @@ const SWAPPERS = [
 	AlgoFiHighConstantProductSwapper,
 	PactSwapper
 ]
-const SLIPPAGE = 0.5
+const SLIPPAGE = 0.1
 
 class OrderFiller {
 	static async fillOrders() {
@@ -68,7 +68,7 @@ class OrderFiller {
 			}))
 			for (let j = 0; j < orders.length; j++) {
 				const openOrder = orders[j]
-				const minAmountOut = parseInt(openOrder.amountOut * ((10000 + openOrder.feeBps) / 10000))
+				const minAmountOut = Math.ceil(openOrder.amountOut * ((10000 + openOrder.feeBps) / 10000))
 				let bestQuote = 0
 				let bestSwapper = null
 				for (let k = 0; k < swappers.length; k++) {
