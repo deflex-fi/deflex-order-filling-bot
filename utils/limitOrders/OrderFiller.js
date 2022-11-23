@@ -154,7 +154,7 @@ class OrderFiller {
 						id: openOrder.assetOutId
 					})
 				}
-				const composer = await fillerClient.prepareBackendFillOrder(openOrder, transactionWithSigners, backendAccount.addr, protocolTreasuryAddress, params)
+				const composer = await fillerClient.prepareBackendFillOrder(openOrder, transactionWithSigners, backendAccount.addr, backendAccount.addr, params)
 				try {
 					await composer.execute(algod, 4)
 					totalFilled++
