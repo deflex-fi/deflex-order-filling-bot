@@ -73,7 +73,12 @@ class OrderFiller {
 				let bestSwapper = null
 				for (let k = 0; k < swappers.length; k++) {
 					const swapper = swappers[k]
-					const quote = swapper.fetchQuote(openOrder.amountIn)
+					let quote
+					try {
+						quote = swapper.fetchQuote(openOrder.amountIn)
+					} catch {
+						continue
+					}
 					if (quote > bestQuote) {
 						bestQuote = quote
 						bestSwapper = swapper
