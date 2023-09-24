@@ -26,10 +26,11 @@ class OrderFiller {
 		const indexer = createIndexerClient()
 		const algod = createAlgodClient()
 
-		let openOrders = await DeflexLimitOrderFillerClient.fetchAllOpenOrders(indexer, constants.CHAIN_MAINNET)
-		const key = process.env.BACKEND_SIGNER_KEY.replace(/_/g, ' ')
-		const backendAccount = mnemonicToSecretKey(key)
-		const fillerClient = new DeflexLimitOrderFillerClient(algod, constants.CHAIN_MAINNET, key)
+		let openOrdersV0 = await DeflexLimitOrderFillerClient.fetchAllOpenOrders(indexer, constants.CHAIN_MAINNET, 0)
+		let openOrdersV1 = await DeflexLimitOrderFillerClient.fetchAllOpenOrders(indexer, constants.CHAIN_MAINNET, 1)
+		let openOrders = [...openOrdersV0, ...openOrdersV1]
+		const mnemonic = process.env.BACKEND_SIGNER_KEY.replace(/_/g, ' ').trim()
+		const backendAccount = mnemonicToSecretKey(mnemonic)
 		const backendSigner = makeBasicAccountTransactionSigner(backendAccount)
 
 		// fetch liquidity pool state
@@ -68,6 +69,7 @@ class OrderFiller {
 			}))
 			for (let j = 0; j < orders.length; j++) {
 				const openOrder = orders[j]
+				const fillerClient = new DeflexLimitOrderFillerClient(algod, constants.CHAIN_MAINNET, mnemonic, openOrder['registryAppId'] === 1147114926 ? 1 : 0)
 				const minAmountOut = Math.ceil(openOrder.amountOut * ((10000 + openOrder.feeBps) / 10000))
 				let bestQuote = 0
 				let bestSwapper = null
